@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import { CircuitBackground } from "@/components/background/circuit-background";
@@ -31,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-text="md"
       suppressHydrationWarning
       className={`${manrope.variable} h-full antialiased`}
-      style={{ "--bg-brightness": "0.72" }}
+      style={{ "--bg-brightness": "0.72" } as CSSProperties}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
