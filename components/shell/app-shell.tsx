@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { BookOpen, Bot } from "lucide-react";
 import { findSection } from "@/lib/curriculum";
@@ -11,8 +12,17 @@ import { ToolDialog } from "@/components/shell/tool-dialog";
 import { TopBar } from "@/components/shell/top-bar";
 import { Workspace } from "@/components/shell/workspace";
 
+const VectorRicochetGame = dynamic(() => import("@/components/VectorRicochetGame"), {
+  ssr: false,
+  loading: () => (
+    <section className="glass flex min-h-0 min-w-0 flex-1 items-center justify-center rounded-3xl">
+      <p className="font-mono text-sm text-muted">Загрузка Vector Ricochet…</p>
+    </section>
+  ),
+});
+
 export function AppShell() {
-  const [mode, setMode] = useState<"tutor" | "course">("course");
+  const [mode, setMode] = useState<"tutor" | "course" | "game">("course");
   const [sectionId, setSectionId] = useState("algebra");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -58,9 +68,9 @@ export function AppShell() {
           }}
         />
 
-        {/* Переключатель режимов: Курс (12 тем) / ИИ-Репетитор */}
+        {/* Переключатель режимов: Курс (12 тем) / ИИ-Репетитор / Игра */}
         <div className="flex items-center gap-2">
-          <div className="glass inline-flex rounded-2xl p-1">
+          <div className="glass inline-flex flex-wrap rounded-2xl p-1">
             <button
               type="button"
               onClick={() => setMode("course")}
@@ -87,10 +97,30 @@ export function AppShell() {
               <Bot className="size-4" />
               ИИ-Репетитор
             </button>
+            <button
+              type="button"
+              onClick={() => setMode("game")}
+              title="Vector Ricochet"
+              className={[
+                "flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium transition sm:text-sm",
+                mode === "game"
+                  ? "bg-accent text-on-accent shadow-[0_0_14px_var(--glow-soft)]"
+                  : "text-muted hover:text-ink",
+              ].join(" ")}
+            >
+              <span aria-hidden="true">🎮</span>
+              Игра
+            </button>
           </div>
         </div>
 
-        {mode === "course" ? <CourseView /> : <Workspace key={section.id} section={section} />}
+        {mode === "course" ? (
+          <CourseView />
+        ) : mode === "game" ? (
+          <VectorRicochetGame />
+        ) : (
+          <Workspace key={section.id} section={section} />
+        )}
       </div>
       <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <ToolDialog toolId={toolId} onClose={() => setToolId(null)} />
